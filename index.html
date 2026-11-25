@@ -462,7 +462,7 @@ input:focus{
 <body>
 <header>
   <div class="brand">
-    <div class="brandText">TUCUVORI</div>
+    <div class="brandText">TEMPLO DE UMBANDA CABOCLO UBIRAJARA E VOVÓ RITA</div>
   </div>
   <h1>Templo de Umbanda Caboclo Ubirajara e Vovó Rita</h1>
   <h2>Confirmação de Presença</h2>
@@ -474,7 +474,7 @@ input:focus{
       <div class="eventKicker"><span class="eventKickerDot"></span>Informações do Evento</div>
     </div>
 
-    <div class="eventTitle" id="eventName">Nome do Evento</div>
+    <div class="eventTitle" id="eventName">Templo de Umbanda Caboclo Ubirajara e Vovó Rita</div>
 
     <div class="eventDetails">
       <div class="eventDetail">
@@ -546,11 +546,11 @@ input:focus{
     <div class="pixMeta">
       <div class="pixField">
         <span class="pixFieldLabel">Instituição</span>
-        <span class="pixFieldValue" id="pixBank">C6 Bank</span>
+        <span class="pixFieldValue" id="pixBank">C6</span>
       </div>
       <div class="pixField">
         <span class="pixFieldLabel">Recebedor</span>
-        <span class="pixFieldValue" id="pixReceiver">Templo de Umbanda Caboclo Ubirajara e Vovó Rita</span>
+        <span class="pixFieldValue" id="pixReceiver">Luciana de Souza Lima</span>
       </div>
       <div class="pixField full">
         <span class="pixFieldLabel">Chave Pix</span>
@@ -592,14 +592,17 @@ const db = firebase.database();
 const DB_PATH = "confraternizacao_chacara/respostas";
 const respostasRef = db.ref(DB_PATH);
 
-const PIX_TEMPLO_NOME = "Templo de Umbanda Caboclo Ubirajara e Vovó Rita";
+const TITULO_TEMPLO = "Templo de Umbanda Caboclo Ubirajara e Vovó Rita";
+const RECEBEDOR_PIX = "Luciana de Souza Lima";
+const CHAVE_PIX_PADRAO = "lucianalima.sls@hotmail.com";
+const BANCO_PIX_PADRAO = "C6";
 
 const DEFAULT_PIX_CONFIG = {
-  chavePix: "lucianalima.sls@hotmail.com",
-  bancoPix: "C6 Bank",
-  nomeRecebedor: PIX_TEMPLO_NOME,
+  chavePix: CHAVE_PIX_PADRAO,
+  bancoPix: BANCO_PIX_PADRAO,
+  nomeRecebedor: RECEBEDOR_PIX,
   cidadeRecebedor: "SAO PAULO",
-  mensagemPix: PIX_TEMPLO_NOME
+  mensagemPix: TITULO_TEMPLO
 };
 
 let pixConfig = { ...DEFAULT_PIX_CONFIG };
@@ -728,7 +731,7 @@ function gerarPixCopiaCola({ chave, recebedor, cidade, valor, txid = "***", desc
   const chaveLimpa = String(chave || "").trim();
   if(!chaveLimpa) return "";
 
-  const nomeLimpo = limparTextoPix(recebedor || PIX_TEMPLO_NOME, 25) || "TEMPLO UMBANDA";
+  const nomeLimpo = limparTextoPix(recebedor || RECEBEDOR_PIX, 25) || "LUCIANA DE SOUZA LIMA";
   const cidadeLimpa = limparTextoPix(cidade || "SAO PAULO", 15).toUpperCase() || "SAO PAULO";
   const txidLimpo = limparTxidPix(txid);
 
@@ -771,8 +774,8 @@ function atualizarBlocoPix(){
   const valorExibido = ultimoValorConfirmado !== null ? ultimoValorConfirmado : valor;
 
   $("pixAmount").textContent = valido ? money(valorExibido) : "A revisar";
-  $("pixBank").textContent = pixConfig.bancoPix || "C6 Bank";
-  $("pixReceiver").textContent = PIX_TEMPLO_NOME;
+  $("pixBank").textContent = pixConfig.bancoPix || BANCO_PIX_PADRAO;
+  $("pixReceiver").textContent = pixConfig.nomeRecebedor || RECEBEDOR_PIX;
   $("pixKeyDisplay").textContent = pixConfig.chavePix ? pixConfig.chavePix : "Não configurada";
   $("pixProtocolBadge").textContent = ultimoProtocolo
     ? "Protocolo: " + ultimoProtocolo
@@ -805,18 +808,18 @@ function atualizarBlocoPix(){
 
   const payload = gerarPixCopiaCola({
     chave: pixConfig.chavePix,
-    recebedor: PIX_TEMPLO_NOME,
+    recebedor: pixConfig.nomeRecebedor || RECEBEDOR_PIX,
     cidade: pixConfig.cidadeRecebedor,
     valor: valorExibido,
     txid: ultimoProtocolo || "CONFIRMACAO",
-    descricao: PIX_TEMPLO_NOME
+    descricao: pixConfig.mensagemPix || TITULO_TEMPLO
   });
 
   $("pixPayloadBox").textContent = payload;
   copyBtn.disabled = false;
   forwardBtn.disabled = false;
   $("pixHint").innerHTML =
-    `Chave Pix (${pixConfig.bancoPix}): <strong>${pixConfig.chavePix}</strong>. Copie o código acima ou clique em <strong>Encaminhar para fazer Pix</strong>.`;
+    `Recebedor: <strong>${pixConfig.nomeRecebedor || RECEBEDOR_PIX}</strong> • Banco: <strong>${pixConfig.bancoPix || BANCO_PIX_PADRAO}</strong> • Chave Pix: <strong>${pixConfig.chavePix}</strong>.`;
 }
 
 async function copiarTexto(texto){
@@ -856,7 +859,8 @@ $("forwardPixBtn").addEventListener("click", async ()=>{
   try{ await copiarTexto(code); }catch(_){}
 
   const resumoTexto =
-    `Pix de ${money(valorExibido)} para ${PIX_TEMPLO_NOME} (${pixConfig.bancoPix || "C6 Bank"})\n` +
+    `Pix de ${money(valorExibido)} — ${TITULO_TEMPLO}\n` +
+    `Recebedor: ${pixConfig.nomeRecebedor || RECEBEDOR_PIX} (${pixConfig.bancoPix || BANCO_PIX_PADRAO})\n` +
     `Chave Pix: ${pixConfig.chavePix}` +
     (ultimoProtocolo ? `\nProtocolo: ${ultimoProtocolo}` : "") +
     `\n\nCódigo Pix Copia e Cola:\n${code}`;
@@ -864,7 +868,7 @@ $("forwardPixBtn").addEventListener("click", async ()=>{
   if(navigator.share){
     try{
       await navigator.share({
-        title: "Pagamento Pix — " + PIX_TEMPLO_NOME,
+        title: "Pagamento Pix — " + TITULO_TEMPLO,
         text: resumoTexto
       });
       return;
@@ -1112,18 +1116,18 @@ const configRef = db.ref(CONFIG_PATH);
 function aplicarConfiguracoes(cfg){
   if(!cfg || typeof cfg!=="object") cfg={};
 
-  const nome=String(cfg.nomeEvento||"Confraternização na Chácara").trim();
-  const data=String(cfg.dataEvento||"").trim();
-  const hora=String(cfg.horaEvento||"").trim();
-  const local=String(cfg.localEvento||"").trim();
-  const info=String(cfg.informacoes||"").trim();
+  const nome = TITULO_TEMPLO;
+  const data = String(cfg.dataEvento||"").trim();
+  const hora = String(cfg.horaEvento||"").trim();
+  const local = String(cfg.localEvento||"").trim();
+  const info = String(cfg.informacoes||"").trim();
 
   pixConfig = {
-    chavePix: String(cfg.chavePix || cfg.pixChave || DEFAULT_PIX_CONFIG.chavePix).trim(),
-    bancoPix: String(cfg.bancoPix || cfg.pixBanco || DEFAULT_PIX_CONFIG.bancoPix).trim(),
-    nomeRecebedor: PIX_TEMPLO_NOME,
+    chavePix: String(cfg.chavePix || cfg.pixChave || CHAVE_PIX_PADRAO).trim(),
+    bancoPix: String(cfg.bancoPix || cfg.pixBanco || BANCO_PIX_PADRAO).trim(),
+    nomeRecebedor: RECEBEDOR_PIX,
     cidadeRecebedor: String(cfg.cidadeRecebedor || cfg.pixCidade || DEFAULT_PIX_CONFIG.cidadeRecebedor).trim(),
-    mensagemPix: PIX_TEMPLO_NOME
+    mensagemPix: TITULO_TEMPLO
   };
 
   faixasPreco=normalizarFaixas(cfg.faixasPreco);
