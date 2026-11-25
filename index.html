@@ -192,12 +192,14 @@ header p{
   background:var(--gold-bg);
   color:#67552f;
   font-size:11px;
-  line-height:1.45;
+  line-height:1.55;
+  white-space:pre-line;
+  overflow-wrap:anywhere;
 }
 .eventExtra:before{
   content:"Observação";
   display:block;
-  margin-bottom:3px;
+  margin-bottom:4px;
   color:#92753a;
   font-size:9px;font-weight:950;
   letter-spacing:.08em;text-transform:uppercase;
@@ -300,7 +302,7 @@ input:focus{
   background:#f8fbf9;
 }
 .fee b{display:block;color:var(--g800);font-size:14px}
-.fee span{display:block;margin-top:2px;color:var(--muted);font-size:9px}
+.fee span{display:block;margin-top:2px;color:var(--muted);font-size:9px;line-height:1.35}
 .fee.empty{grid-column:1/-1;color:var(--muted)}
 .fee.warning{background:#fff8e9;border-color:#ead9ae}
 .fee.warning b{color:#876a2e}
@@ -548,7 +550,7 @@ input:focus{
       </div>
       <div class="pixField">
         <span class="pixFieldLabel">Recebedor</span>
-        <span class="pixFieldValue" id="pixReceiver">Templo Tucuvori</span>
+        <span class="pixFieldValue" id="pixReceiver">Templo de Umbanda Caboclo Ubirajara e Vovó Rita</span>
       </div>
       <div class="pixField full">
         <span class="pixFieldLabel">Chave Pix</span>
@@ -590,12 +592,14 @@ const db = firebase.database();
 const DB_PATH = "confraternizacao_chacara/respostas";
 const respostasRef = db.ref(DB_PATH);
 
+const PIX_TEMPLO_NOME = "Templo de Umbanda Caboclo Ubirajara e Vovó Rita";
+
 const DEFAULT_PIX_CONFIG = {
   chavePix: "lucianalima.sls@hotmail.com",
   bancoPix: "C6 Bank",
-      nomeRecebedor: "Luciana Lima",
+  nomeRecebedor: PIX_TEMPLO_NOME,
   cidadeRecebedor: "SAO PAULO",
-  mensagemPix: "Confraternizacao Chacara"
+  mensagemPix: PIX_TEMPLO_NOME
 };
 
 let pixConfig = { ...DEFAULT_PIX_CONFIG };
@@ -604,6 +608,20 @@ let ultimoValorConfirmado = null;
 
 const $ = id => document.getElementById(id);
 const money = n => Number(n || 0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+function formatarObservacao(texto){
+  const raw = String(texto || "").trim();
+  if(!raw) return "";
+
+  const partes = raw
+    .split(/\s*(?:\|\s*>|>\s*|\|\s*)\s*/)
+    .map(p => p.replace(/^[|>•\-–—\s]+|[|>•\-–—\s]+$/g, "").trim())
+    .filter(Boolean);
+
+  if(partes.length <= 1) return raw;
+
+  return partes.map(p => "• " + p).join("\n");
+}
 
 const DEFAULT_PRICING = [
   {id:"faixa_1", label:"Até 7 anos", idadeMin:0, idadeMax:7, valor:0},
@@ -669,9 +687,20 @@ function limparTextoPix(str, maxLen){
   return String(str || "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^\w\s.-@+]/g, " ")
+    .replace(/[^A-Za-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
     .trim()
-    .slice(0, maxLen);
+    .slice(0, maxLen)
+    .trim();
+}
+
+function limparTxidPix(txid){
+  const limpo = String(txid || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Za-z0-9]/g, "")
+    .slice(0, 25);
+  return limpo || "***";
 }
 
 function tlv(id, value){
@@ -699,10 +728,13 @@ function gerarPixCopiaCola({ chave, recebedor, cidade, valor, txid = "***", desc
   const chaveLimpa = String(chave || "").trim();
   if(!chaveLimpa) return "";
 
-  const nomeLimpo = limparTextoPix(recebedor || "RECEBEDOR", 25) || "RECEBEDOR";
+  const nomeLimpo = limparTextoPix(recebedor || PIX_TEMPLO_NOME, 25) || "TEMPLO UMBANDA";
   const cidadeLimpa = limparTextoPix(cidade || "SAO PAULO", 15).toUpperCase() || "SAO PAULO";
-  const descLimpa = limparTextoPix(descricao, 50);
-  const txidLimpo = limparTextoPix(txid, 25).replace(/\s+/g, "") || "***";
+  const txidLimpo = limparTxidPix(txid);
+
+  // Subcampo 02 (descrição) só é incluído se couber no limite total de 99 chars do campo 26
+  const maxDesc = 99 - (4 + 14 + 4 + chaveLimpa.length + 4);
+  const descLimpa = maxDesc > 0 ? limparTextoPix(descricao, maxDesc) : "";
 
   let guiContent = tlv("00", "br.gov.bcb.pix") + tlv("01", chaveLimpa);
   if(descLimpa) guiContent += tlv("02", descLimpa);
@@ -712,7 +744,7 @@ function gerarPixCopiaCola({ chave, recebedor, cidade, valor, txid = "***", desc
 
   const partial =
     tlv("00", "01") +
-    tlv("01", "12") +
+    tlv("01", "11") +
     tlv("26", guiContent) +
     tlv("52", "0000") +
     tlv("53", "986") +
@@ -740,7 +772,7 @@ function atualizarBlocoPix(){
 
   $("pixAmount").textContent = valido ? money(valorExibido) : "A revisar";
   $("pixBank").textContent = pixConfig.bancoPix || "C6 Bank";
-  $("pixReceiver").textContent = pixConfig.nomeRecebedor || "Templo Tucuvori";
+  $("pixReceiver").textContent = PIX_TEMPLO_NOME;
   $("pixKeyDisplay").textContent = pixConfig.chavePix ? pixConfig.chavePix : "Não configurada";
   $("pixProtocolBadge").textContent = ultimoProtocolo
     ? "Protocolo: " + ultimoProtocolo
@@ -773,11 +805,11 @@ function atualizarBlocoPix(){
 
   const payload = gerarPixCopiaCola({
     chave: pixConfig.chavePix,
-    recebedor: pixConfig.nomeRecebedor,
+    recebedor: PIX_TEMPLO_NOME,
     cidade: pixConfig.cidadeRecebedor,
     valor: valorExibido,
     txid: ultimoProtocolo || "CONFIRMACAO",
-    descricao: pixConfig.mensagemPix
+    descricao: PIX_TEMPLO_NOME
   });
 
   $("pixPayloadBox").textContent = payload;
@@ -824,7 +856,7 @@ $("forwardPixBtn").addEventListener("click", async ()=>{
   try{ await copiarTexto(code); }catch(_){}
 
   const resumoTexto =
-    `Pix de ${money(valorExibido)} para ${pixConfig.nomeRecebedor || "Templo Tucuvori"} (${pixConfig.bancoPix || "C6 Bank"})\n` +
+    `Pix de ${money(valorExibido)} para ${PIX_TEMPLO_NOME} (${pixConfig.bancoPix || "C6 Bank"})\n` +
     `Chave Pix: ${pixConfig.chavePix}` +
     (ultimoProtocolo ? `\nProtocolo: ${ultimoProtocolo}` : "") +
     `\n\nCódigo Pix Copia e Cola:\n${code}`;
@@ -832,7 +864,7 @@ $("forwardPixBtn").addEventListener("click", async ()=>{
   if(navigator.share){
     try{
       await navigator.share({
-        title: "Pagamento Pix — " + (pixConfig.nomeRecebedor || "Confirmação"),
+        title: "Pagamento Pix — " + PIX_TEMPLO_NOME,
         text: resumoTexto
       });
       return;
@@ -860,7 +892,7 @@ function renderFees(){
     b.textContent=Number(f.valor||0)===0 ? "Grátis" : formatarPreco(f);
 
     const s=document.createElement("span");
-    s.textContent=f.label+" • "+textoFaixa(f);
+    s.textContent=f.label || textoFaixa(f);
 
     item.append(b,s);
     box.append(item);
@@ -1089,9 +1121,9 @@ function aplicarConfiguracoes(cfg){
   pixConfig = {
     chavePix: String(cfg.chavePix || cfg.pixChave || DEFAULT_PIX_CONFIG.chavePix).trim(),
     bancoPix: String(cfg.bancoPix || cfg.pixBanco || DEFAULT_PIX_CONFIG.bancoPix).trim(),
-    nomeRecebedor: String(cfg.nomeRecebedor || cfg.pixRecebedor || DEFAULT_PIX_CONFIG.nomeRecebedor).trim(),
+    nomeRecebedor: PIX_TEMPLO_NOME,
     cidadeRecebedor: String(cfg.cidadeRecebedor || cfg.pixCidade || DEFAULT_PIX_CONFIG.cidadeRecebedor).trim(),
-    mensagemPix: String(cfg.mensagemPix || cfg.pixMensagem || nome || DEFAULT_PIX_CONFIG.mensagemPix).trim()
+    mensagemPix: PIX_TEMPLO_NOME
   };
 
   faixasPreco=normalizarFaixas(cfg.faixasPreco);
@@ -1108,9 +1140,10 @@ function aplicarConfiguracoes(cfg){
 
   $("eventDateTime").textContent=dh || "A definir";
   $("eventLocal").textContent=local || "A definir";
-  $("eventExtra").textContent=info;
-  $("eventExtra").hidden=!info;
-  $("eventInfo").hidden=!(nome||dh||local||info);
+  const infoFormatada = formatarObservacao(info);
+  $("eventExtra").textContent=infoFormatada;
+  $("eventExtra").hidden=!infoFormatada;
+  $("eventInfo").hidden=!(nome||dh||local||infoFormatada);
   document.title="Confirmação | "+nome;
 
   updateSummary();
