@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#176b4d">
+<title>Tucuvori | Confirmação de Presença</title>
+<style>
+:root{
+  --g950:#063b2b;
+  --g900:#0a4b36;
+  --g800:#126047;
+  --g700:#176b4d;
+  --g500:#2f8b67;
+  --g100:#e8f4ee;
+  --gold:#c9a45d;
+  --gold-bg:#fbf5e7;
+  --ink:#193028;
+  --muted:#718078;
+  --bg:#f4f7f5;
+  --card:#fff;
+  --line:#dfe9e3;
+  --danger:#a9362e;
+  --shadow:0 12px 32px rgba(6,59,43,.08);
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;min-height:100%;width:100%;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 90% 0%,rgba(201,164,93,.12),transparent 24%),
+    linear-gradient(#f7faf8 0,#f4f7f5 280px);
+}
+body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+button,input{font:inherit}
+
+header{
+  position:relative;
+  overflow:hidden;
+  padding:26px 18px 30px;
+  color:#fff;
+  background:linear-gradient(145deg,var(--g950),var(--g700));
+}
+header:before{
+  content:"";
+  position:absolute;
+  width:220px;height:220px;
+  right:-120px;top:-125px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:50%;
+}
+header:after{
+  content:"";
+  position:absolute;
+  width:150px;height:150px;
+  left:-100px;bottom:-100px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:50%;
+}
+.brand{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;
+  gap:9px;margin-bottom:15px;
+}
+.brandMark{
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:var(--gold);
+  color:var(--g950);
+  font-weight:950;
+  font-size:14px;
+}
+.brandText{
+  font-size:10px;font-weight:900;
+  letter-spacing:.13em;text-transform:uppercase;
+  color:#eef8f3;
+}
+header h1{
+  position:relative;z-index:1;
+  max-width:700px;margin:0 auto;
+  font-size:clamp(22px,6vw,30px);
+  line-height:1.12;
+  letter-spacing:-.025em;
+  text-align:center;
+}
+header h2{
+  position:relative;z-index:1;
+  width:max-content;max-width:100%;
+  margin:12px auto 0;
+  padding:7px 12px;
+  border:1px solid rgba(255,255,255,.20);
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  font-size:12px;font-weight:850;
+}
+header p{
+  position:relative;z-index:1;
+  max-width:530px;margin:10px auto 0;
+  color:#dceee6;font-size:12px;line-height:1.5;
+}
+
+.eventInfo{
+  width:min(720px,calc(100% - 28px));
+  margin:16px auto 18px;
+}
+.eventInfoCard{
+  position:relative;
+  overflow:hidden;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+.eventInfoCard:before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:4px;
+  background:linear-gradient(var(--gold),var(--g700));
+}
+.eventTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding-left:8px;
+}
+.eventKicker{
+  display:flex;align-items:center;gap:7px;
+  color:var(--g700);
+  font-size:10px;font-weight:950;
+  letter-spacing:.09em;text-transform:uppercase;
+}
+.eventKickerDot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold);
+  box-shadow:0 0 0 4px var(--gold-bg);
+}
+.eventTitle{
+  margin:8px 0 15px;
+  padding-left:8px;
+  color:var(--g950);
+  font-size:21px;
+  line-height:1.15;
+  font-weight:950;
+  letter-spacing:-.02em;
+}
+.eventDetails{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+.eventDetail{
+  display:flex;align-items:center;gap:10px;
+  min-width:0;
+  padding:11px;
+  border:1px solid var(--line);
+  background:#f8fbf9;
+  border-radius:14px;
+}
+.eventIcon{
+  flex:0 0 32px;
+  width:32px;height:32px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:var(--gold-bg);
+  font-size:15px;
+}
+.eventDetailText{min-width:0}
+.eventDetailLabel{
+  display:block;
+  margin-bottom:2px;
+  color:#78867f;
+  font-size:9px;font-weight:950;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.eventDetailValue{
+  display:block;
+  color:var(--ink);
+  font-size:12px;font-weight:800;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+.eventExtra{
+  margin:9px 0 0 0;
+  padding:10px 12px;
+  border:1px solid #eadfc7;
+  border-radius:12px;
+  background:var(--gold-bg);
+  color:#67552f;
+  font-size:11px;
+  line-height:1.45;
+}
+.eventExtra:before{
+  content:"Observação";
+  display:block;
+  margin-bottom:3px;
+  color:#92753a;
+  font-size:9px;font-weight:950;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+
+main{
+  width:min(720px,calc(100% - 28px));
+  margin:0 auto 34px;
+}
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:clamp(18px,4vw,26px);
+  box-shadow:var(--shadow);
+}
+.sectionHead{
+  display:flex;align-items:center;gap:11px;
+}
+.sectionNumber{
+  flex:0 0 35px;width:35px;height:35px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:var(--g100);
+  color:var(--g800);
+  font-size:12px;font-weight:950;
+}
+h3{margin:0;color:var(--g950);font-size:19px;line-height:1.2}
+.muted{color:var(--muted);font-size:12px;line-height:1.55}
+.sectionDescription{margin:7px 0 18px 0}
+
+#peopleList{display:grid;gap:9px}
+.person{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 96px 43px;
+  gap:9px;
+  align-items:start;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fbfdfc;
+}
+.person:focus-within{
+  border-color:#9fc8b4;
+  box-shadow:0 0 0 3px rgba(47,139,103,.08);
+}
+label{
+  display:block;
+  height:11px;
+  line-height:11px;
+  margin-bottom:6px;
+  color:#64736c;font-size:9px;font-weight:950;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+input{
+  display:block;width:100%;min-width:0;
+  height:43px;
+  padding:0 11px;border:1px solid #cbd9d1;
+  border-radius:10px;outline:0;
+  background:#fff;color:var(--ink);font-size:14px;
+}
+input:focus{
+  border-color:var(--g500);
+  box-shadow:0 0 0 3px rgba(47,139,103,.10);
+}
+.personPriceHint{
+  display:block;
+  margin-top:5px;
+  font-size:10px;
+  font-weight:700;
+  color:var(--g800);
+  white-space:nowrap;
+}
+.remove{
+  width:43px;height:43px;
+  margin-top:17px;
+  padding:0;
+  display:grid;place-items:center;
+  border:1px solid #f0d2ce;border-radius:10px;
+  background:#fff2f0;color:var(--danger);font-size:20px;
+  cursor:pointer;
+}
+.add{
+  width:100%;min-height:45px;margin-top:11px;
+  border:1px dashed #a9cbb8;border-radius:11px;
+  background:#eff8f2;color:var(--g800);
+  font-size:12px;font-weight:850;
+  cursor:pointer;
+}
+.fees{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:7px;margin-top:16px;
+}
+.fee{
+  padding:10px 5px;text-align:center;
+  border:1px solid var(--line);border-radius:12px;
+  background:#f8fbf9;
+}
+.fee b{display:block;color:var(--g800);font-size:14px}
+.fee span{display:block;margin-top:2px;color:var(--muted);font-size:9px}
+.fee.empty{grid-column:1/-1;color:var(--muted)}
+.fee.warning{background:#fff8e9;border-color:#ead9ae}
+.fee.warning b{color:#876a2e}
+.priceMissing{color:#a36c16!important}
+.summary{
+  display:grid;grid-template-columns:1fr auto;
+  gap:12px;align-items:center;
+  margin-top:13px;padding:14px 15px;
+  border-radius:15px;color:#fff;
+  background:linear-gradient(135deg,var(--g950),var(--g700));
+}
+.summary .muted{color:#c9ddd4;font-size:10px}
+.summary strong{display:block;margin-top:2px;font-size:21px;color:#fff}
+.summary>div:last-child{text-align:right}
+.summary>div:last-child strong{color:#f2d99e}
+.submit{
+  width:100%;min-height:51px;margin-top:11px;
+  border:1px solid #0b563e;border-radius:13px;
+  background:linear-gradient(135deg,var(--g700),var(--g900));
+  color:#fff;font-size:13px;font-weight:900;
+  box-shadow:0 9px 20px rgba(23,107,77,.18);
+  cursor:pointer;
+}
+.submit:disabled{opacity:.6;cursor:not-allowed}
+.status{
+  display:flex;gap:7px;
+  margin-top:10px;padding:10px 11px;
+  border-radius:10px;
+  background:#f5f8f6;color:var(--muted);
+  font-size:11px;line-height:1.45;
+}
+.status.ok{background:#edf7f0;color:var(--g800)}
+.status.error{background:#fff2f0;color:var(--danger)}
+.foot{margin-top:12px;text-align:center;color:#84918b;font-size:9px;line-height:1.5}
+
+@media(max-width:540px){
+  header{padding:23px 15px 25px}
+  .eventInfo{width:calc(100% - 22px);margin-top:12px}
+  .eventInfoCard{padding:15px}
+  .eventTitle{font-size:19px;margin-bottom:13px}
+  .eventDetails{grid-template-columns:1fr}
+}
+@media(max-width:390px){
+  main{width:calc(100% - 18px)}
+  .person{grid-template-columns:minmax(0,1fr) 76px 38px;padding:10px}
+  .remove{width:38px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="brandText">TUCUVORI</div>
+  </div>
+  <h1>Templo de Umbanda Caboclo Ubirajara e Vovó Rita</h1>
+  <h2>Confirmação de Presença</h2>
+</header>
+
+<section class="eventInfo" id="eventInfo" hidden>
+  <div class="eventInfoCard">
+    <div class="eventTop">
+      <div class="eventKicker"><span class="eventKickerDot"></span>Informações do Evento</div>
+    </div>
+
+    <div class="eventTitle" id="eventName">Nome do Evento</div>
+
+    <div class="eventDetails">
+      <div class="eventDetail">
+        <div class="eventIcon">📅</div>
+        <div class="eventDetailText">
+          <span class="eventDetailLabel">Data e horário</span>
+          <span class="eventDetailValue" id="eventDateTime">A definir</span>
+        </div>
+      </div>
+
+      <div class="eventDetail">
+        <div class="eventIcon">📍</div>
+        <div class="eventDetailText">
+          <span class="eventDetailLabel">Local</span>
+          <span class="eventDetailValue" id="eventLocal">A definir</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="eventExtra" id="eventExtra" hidden></div>
+  </div>
+</section>
+<main>
+<section class="card">
+<div class="sectionHead">
+  <div>
+    <h3>Quem vai participar?</h3>
+  </div>
+</div>
+<p class="muted sectionDescription">Adicione todas as pessoas que irão para a chácara, incluindo você. Informe o nome e a idade de cada uma.</p>
+
+<form id="form" novalidate>
+  <div id="peopleList"></div>
+
+  <button class="add" id="addPerson" type="button">＋ Adicionar outra pessoa</button>
+
+  <div class="fees" id="fees" aria-label="Valores por idade"></div>
+
+  <div class="summary">
+    <div><span class="muted">Pessoas na lista</span><strong id="count">1</strong></div>
+    <div><span class="muted">Valor total</span><strong id="amount">R$ 50,00</strong></div>
+  </div>
+
+  <button class="submit" id="submit" type="submit">Enviar confirmação</button>
+  <div class="status" id="status" role="status" aria-live="polite">Verificando conexão com o servidor...</div>
+</form>
+
+<p class="foot">Sua confirmação será enviada para a organização do evento. Confira os nomes e as idades antes de enviar.</p>
+</section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAKjavNwXaaNigtooZFaPF7-FyWg7qzGeI",
+  authDomain: "livro-de-financas.firebaseapp.com",
+  databaseURL: "https://livro-de-financas-default-rtdb.firebaseio.com",
+  projectId: "livro-de-financas",
+  storageBucket: "livro-de-financas.firebasestorage.app",
+  messagingSenderId: "915101729753",
+  appId: "1:915101729753:web:64b61b3ff4cae9d8590fc8"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+const DB_PATH = "confraternizacao_chacara/respostas";
+const respostasRef = db.ref(DB_PATH);
+
+const $ = id => document.getElementById(id);
+const money = n => Number(n || 0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+const DEFAULT_PRICING = [
+  {id:"faixa_1", label:"Até 7 anos", idadeMin:0, idadeMax:7, valor:0},
+  {id:"faixa_2", label:"8 a 12 anos", idadeMin:8, idadeMax:12, valor:35},
+  {id:"faixa_3", label:"13 anos ou mais", idadeMin:13, idadeMax:null, valor:50}
+];
+
+let faixasPreco = DEFAULT_PRICING.map(f=>({...f}));
+
+function normalizarFaixas(raw){
+  let lista = Array.isArray(raw) ? raw : (
+    raw && typeof raw === "object" ? Object.values(raw) : []
+  );
+
+  lista = lista.map((f,i)=>({
+    id:String(f?.id || ("faixa_"+(i+1))),
+    label:String(f?.label || "").trim(),
+    idadeMin:Number(f?.idadeMin),
+    idadeMax:(f?.idadeMax==="" || f?.idadeMax===null || typeof f?.idadeMax==="undefined")
+      ? null : Number(f.idadeMax),
+    valor:Number(f?.valor)
+  })).filter(f=>
+    f.label &&
+    Number.isInteger(f.idadeMin) &&
+    f.idadeMin>=0 &&
+    (f.idadeMax===null || (Number.isInteger(f.idadeMax) && f.idadeMax>=f.idadeMin)) &&
+    Number.isFinite(f.valor) &&
+    f.valor>=0
+  );
+
+  if(!lista.length) return DEFAULT_PRICING.map(f=>({...f}));
+
+  return lista.sort((a,b)=>a.idadeMin-b.idadeMin);
+}
+
+function faixaDaIdade(idade){
+  const n=Number(idade);
+  if(!Number.isInteger(n) || n<0) return null;
+  return faixasPreco.find(f=>
+    n>=f.idadeMin && (f.idadeMax===null || n<=f.idadeMax)
+  ) || null;
+}
+
+function valorPorIdade(idade){
+  const faixa=faixaDaIdade(idade);
+  return faixa ? Number(faixa.valor||0) : null;
+}
+
+function textoFaixa(f){
+  if(f.idadeMax===null) return f.idadeMin+" anos ou mais";
+  if(f.idadeMin===f.idadeMax) return f.idadeMin+" anos";
+  return f.idadeMin+" a "+f.idadeMax+" anos";
+}
+
+function formatarPreco(f){
+  return money(f.valor);
+}
+
+let rowId = 0;
+
+function renderFees(){
+  const box=$("fees");
+  if(!box) return;
+  box.innerHTML="";
+
+  faixasPreco.forEach(f=>{
+    const item=document.createElement("div");
+    item.className="fee";
+
+    const b=document.createElement("b");
+    b.textContent=Number(f.valor||0)===0 ? "Grátis" : formatarPreco(f);
+
+    const s=document.createElement("span");
+    s.textContent=f.label+" • "+textoFaixa(f);
+
+    item.append(b,s);
+    box.append(item);
+  });
+
+  if(!faixasPreco.length){
+    box.innerHTML='<div class="fee empty">Valores ainda não configurados.</div>';
+  }
+}
+
+function atualizarPrecosDasPessoas(){
+  document.querySelectorAll(".person").forEach(row=>{
+    const valStr = row.querySelector(".personAge")?.value;
+    const aviso = row.querySelector(".personPriceHint");
+    if(!aviso) return;
+
+    if(valStr === "" || valStr === null || typeof valStr === "undefined"){
+      aviso.textContent="";
+      aviso.className="personPriceHint";
+      return;
+    }
+
+    const idade = Number(valStr);
+    const faixa = faixaDaIdade(idade);
+    if(faixa){
+      aviso.textContent="Valor: "+formatarPreco(faixa);
+      aviso.className="personPriceHint";
+    }else if(Number.isInteger(idade)){
+      aviso.textContent="Valor não configurado";
+      aviso.className="personPriceHint priceMissing";
+    }else{
+      aviso.textContent="";
+      aviso.className="personPriceHint";
+    }
+  });
+}
+
+function addPerson(nome="",idade=""){
+  const id = ++rowId;
+  const row = document.createElement("div");
+  row.className = "person";
+  row.dataset.rowId = id;
+
+  const nw = document.createElement("div");
+  const aw = document.createElement("div");
+
+  const nl = document.createElement("label");
+  nl.textContent = "Nome completo";
+
+  const ni = document.createElement("input");
+  ni.type = "text";
+  ni.className = "personName";
+  ni.placeholder = "Nome da pessoa";
+  ni.maxLength = 90;
+  ni.autocomplete = "name";
+  ni.required = true;
+  ni.value = nome;
+
+  const al = document.createElement("label");
+  al.textContent = "Idade";
+
+  const ai = document.createElement("input");
+  ai.type = "number";
+  ai.className = "personAge";
+  ai.placeholder = "Idade";
+  ai.min = "0";
+  ai.max = "110";
+  ai.step = "1";
+  ai.inputMode = "numeric";
+  ai.required = true;
+  ai.value = idade;
+
+  const rm = document.createElement("button");
+  rm.type = "button";
+  rm.className = "remove";
+  rm.textContent = "×";
+  rm.setAttribute("aria-label","Remover pessoa");
+
+  nw.append(nl,ni);
+  const ph=document.createElement("small");
+  ph.className="personPriceHint";
+  aw.append(al,ai,ph);
+  row.append(nw,aw,rm);
+  $("peopleList").append(row);
+
+  ni.addEventListener("input",updateSummary);
+  ai.addEventListener("input",updateSummary);
+
+  rm.addEventListener("click",()=>{
+    row.remove();
+    if(!$("peopleList").children.length) addPerson();
+    updateSummary();
+  });
+
+  updateSummary();
+}
+
+function getPeople(){
+  return [...$("peopleList").querySelectorAll(".person")].map(row=>{
+    const ageVal = row.querySelector(".personAge").value;
+    return {
+      nome:row.querySelector(".personName").value.trim(),
+      idade: ageVal === "" ? NaN : Number(ageVal)
+    };
+  });
+}
+
+function updateSummary(){
+  const ps = getPeople();
+  $("count").textContent = ps.length;
+
+  const valores = ps.map(p=>valorPorIdade(p.idade));
+  const total = valores.reduce((s,v)=>s+(v===null?0:v),0);
+  const incompletos = ps.some(p=>Number.isInteger(p.idade) && p.idade>=0 && valorPorIdade(p.idade)===null);
+
+  $("amount").textContent = incompletos ? "A revisar" : money(total);
+  atualizarPrecosDasPessoas();
+}
+
+$("addPerson").addEventListener("click",()=>addPerson());
+
+db.ref(".info/connected").on("value",snap=>{
+  const connected = snap.val() === true;
+  $("status").textContent = connected
+    ? "Conectado ao Firebase. Pronto para enviar."
+    : "Sem conexão com o Firebase. Confira a internet.";
+  $("status").className = "status "+(connected ? "ok" : "error");
+});
+
+$("form").addEventListener("submit",async e=>{
+  e.preventDefault();
+
+  const pessoas = getPeople();
+
+  if(!pessoas.length || pessoas.some(p=>
+    !p.nome ||
+    !Number.isInteger(p.idade) ||
+    p.idade<0 ||
+    p.idade>110
+  )){
+    $("status").textContent = "Preencha o nome e uma idade válida para todas as pessoas.";
+    $("status").className = "status error";
+    return;
+  }
+
+  const semFaixa = pessoas.filter(p=>faixaDaIdade(p.idade)===null);
+  if(semFaixa.length){
+    $("status").textContent = "Não existe valor configurado para: "+semFaixa.map(p=>p.idade+" anos").join(", ")+". Ajuste as idades ou peça à organização para atualizar os valores.";
+    $("status").className = "status error";
+    return;
+  }
+
+  const valorTotal = pessoas.reduce((s,p)=>s+Number(valorPorIdade(p.idade)||0),0);
+
+  const novoRegistro = respostasRef.push();
+
+  const registro = {
+    pessoas,
+    quantidadePessoas:pessoas.length,
+    valorTotal,
+    criadoEm:firebase.database.ServerValue.TIMESTAMP,
+    versao:3
+  };
+
+  $("submit").disabled = true;
+  $("submit").textContent = "Enviando...";
+  $("status").textContent = "Gravando confirmação no banco...";
+
+  try{
+    await novoRegistro.set(registro);
+
+    $("status").textContent =
+      "Confirmação salva! Protocolo: "+novoRegistro.key;
+    $("status").className = "status ok";
+
+    $("peopleList").innerHTML = "";
+    rowId = 0;
+    addPerson();
+
+  }catch(err){
+    console.error(err);
+
+    const msg = err.code === "PERMISSION_DENIED"
+      ? "O Firebase recusou a gravação. Verifique as regras de escrita do Realtime Database."
+      : (err.message || "Erro desconhecido");
+
+    $("status").textContent = "Não foi possível salvar: "+msg;
+    $("status").className = "status error";
+  }finally{
+    $("submit").disabled = false;
+    $("submit").textContent = "Enviar confirmação";
+  }
+});
+
+/* =========================
+   CONFIGURAÇÕES SINCRONIZADAS
+   ========================= */
+const CONFIG_PATH = "confraternizacao_chacara/configuracoes";
+const configRef = db.ref(CONFIG_PATH);
+
+function aplicarConfiguracoes(cfg){
+  if(!cfg || typeof cfg!=="object") cfg={};
+
+  const nome=String(cfg.nomeEvento||"Confraternização na Chácara").trim();
+  const data=String(cfg.dataEvento||"").trim();
+  const hora=String(cfg.horaEvento||"").trim();
+  const local=String(cfg.localEvento||"").trim();
+  const info=String(cfg.informacoes||"").trim();
+
+  faixasPreco=normalizarFaixas(cfg.faixasPreco);
+  renderFees();
+
+  $("eventName").textContent=nome;
+
+  let dh="";
+  if(data){
+    const p=data.split("-");
+    if(p.length===3) dh=p[2]+"/"+p[1]+"/"+p[0];
+    if(hora) dh+=" às "+hora;
+  }
+
+  $("eventDateTime").textContent=dh || "A definir";
+  $("eventLocal").textContent=local || "A definir";
+  $("eventExtra").textContent=info;
+  $("eventExtra").hidden=!info;
+  $("eventInfo").hidden=!(nome||dh||local||info);
+  document.title="Confirmação | "+nome;
+
+  updateSummary();
+}
+
+configRef.on("value",
+  snap=>aplicarConfiguracoes(snap.val()||{}),
+  err=>console.error("Erro ao sincronizar configurações:",err)
+);
+
+addPerson();
+</script>
+</body>
+</html>
