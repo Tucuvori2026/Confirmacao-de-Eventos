@@ -1116,7 +1116,11 @@ const configRef = db.ref(CONFIG_PATH);
 function aplicarConfiguracoes(cfg){
   if(!cfg || typeof cfg!=="object") cfg={};
 
-  const nome = TITULO_TEMPLO;
+  // Mesmo campo gravado pelo painel administrativo: cfg.nomeEvento.
+  // O fallback só é usado se o administrador ainda não tiver definido um nome.
+  const nome = String(
+    cfg.nomeEvento || cfg.tituloEvento || TITULO_TEMPLO
+  ).trim() || TITULO_TEMPLO;
   const data = String(cfg.dataEvento||"").trim();
   const hora = String(cfg.horaEvento||"").trim();
   const local = String(cfg.localEvento||"").trim();
@@ -1127,7 +1131,7 @@ function aplicarConfiguracoes(cfg){
     bancoPix: String(cfg.bancoPix || cfg.pixBanco || BANCO_PIX_PADRAO).trim(),
     nomeRecebedor: RECEBEDOR_PIX,
     cidadeRecebedor: String(cfg.cidadeRecebedor || cfg.pixCidade || DEFAULT_PIX_CONFIG.cidadeRecebedor).trim(),
-    mensagemPix: TITULO_TEMPLO
+    mensagemPix: nome
   };
 
   faixasPreco=normalizarFaixas(cfg.faixasPreco);
